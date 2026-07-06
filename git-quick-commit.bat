@@ -1,6 +1,5 @@
 @echo off
 chcp 65001 >nul
-setlocal enabledelayedexpansion
 
 echo ========================================
 echo        Git Quick Commit Script
@@ -9,20 +8,19 @@ echo.
 
 echo Select commit type:
 echo.
-echo   [1] feat     - New feature
-echo   [2] fix      - Bug fix
-echo   [3] docs     - Documentation
-echo   [4] style    - Code style
-echo   [5] refactor - Refactoring
-echo   [6] perf     - Performance
-echo   [7] test     - Testing
-echo   [8] chore    - Build/Tools
-echo   [9] revert   - Revert
+echo   1 - feat     - New feature
+echo   2 - fix      - Bug fix
+echo   3 - docs     - Documentation
+echo   4 - style    - Code style
+echo   5 - refactor - Refactoring
+echo   6 - perf     - Performance
+echo   7 - test     - Testing
+echo   8 - chore    - Build/Tools
+echo   9 - revert   - Revert
 echo.
 
 set /p type_num="Enter number (1-9): "
 
-set "COMMIT_TYPE="
 if "%type_num%"=="1" set "COMMIT_TYPE=feat"
 if "%type_num%"=="2" set "COMMIT_TYPE=fix"
 if "%type_num%"=="3" set "COMMIT_TYPE=docs"
@@ -33,21 +31,18 @@ if "%type_num%"=="7" set "COMMIT_TYPE=test"
 if "%type_num%"=="8" set "COMMIT_TYPE=chore"
 if "%type_num%"=="9" set "COMMIT_TYPE=revert"
 
-if "%COMMIT_TYPE%"=="" (
+if not defined COMMIT_TYPE (
     echo Invalid selection!
     pause
     exit /b 1
 )
 
-for /f "tokens=2 delims==." %%a in ('wmic os get localdatetime /value') do (
-    set "dt=%%a"
-)
-set "DATE=%dt:~0,4%-%dt:~4,2%-%dt:~6,2%"
+for /f %%a in ('powershell -command "(Get-Date).ToString('yyyy-MM-dd')"') do set "DATE=%%a"
 
 echo.
 set /p message="Enter commit message: "
 
-if "%message%"=="" (
+if not defined message (
     echo Commit message cannot be empty!
     pause
     exit /b 1
@@ -56,51 +51,34 @@ if "%message%"=="" (
 set "FULL_COMMIT=[%DATE%] %COMMIT_TYPE%: %message%"
 
 echo.
-echo ========================================
-echo Ready to commit:
+echo Ready to commit: %FULL_COMMIT%
 echo.
-echo   %FULL_COMMIT%
-echo.
-echo ========================================
-echo.
-
-set /p confirm="Confirm commit? (Y/N): "
+set /p confirm="Confirm? (Y/N): "
 if /i not "%confirm%"=="Y" (
     echo Cancelled.
-    pause
     exit /b 0
 )
 
-echo Staging all changes...
+echo.
+echo Staging...
 git add .
 
 echo Committing...
 git commit -m "%FULL_COMMIT%"
-
-if %ERRORLEVEL% neq 0 (
-    echo.
+if errorlevel 1 (
     echo Commit failed!
     pause
     exit /b 1
 )
 
-echo.
-echo Pushing to remote...
+echo Pushing...
 git push
-
-if %ERRORLEVEL% neq 0 (
-    echo.
-    echo Push failed! Maybe need to pull first.
+if errorlevel 1 (
+    echo Push failed!
     pause
     exit /b 1
 )
 
 echo.
-echo ========================================
-echo Done!
-echo ========================================
-echo.
-echo %FULL_COMMIT%
-echo.
-
+echo Done: %FULL_COMMIT%
 pause

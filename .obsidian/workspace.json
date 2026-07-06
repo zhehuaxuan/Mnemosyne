@@ -13,8 +13,8 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "90-模板/README.md",
-                "mode": "source",
+                "file": "README.md",
+                "mode": "preview",
                 "source": false
               },
               "icon": "lucide-file",
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "90-模板/README.md",
+                "file": "README.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -113,7 +113,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "90-模板/README.md",
+                "file": "README.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
@@ -156,7 +156,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "90-模板/README.md",
+                "file": "README.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
@@ -185,11 +185,12 @@
   },
   "active": "093f1342f461341a",
   "lastOpenFiles": [
+    "90-模板/README.md",
+    "git-quick-commit.bat",
     "50-笔记/README.md.tmp.5216.9c0e66fedbc2",
     "README.md.tmp.5216.f3cb347391a3",
     "10-项目/README.md",
     "50-Notes/README.md",
-    "90-模板/README.md",
     "90-模板",
     "50-笔记/README.md",
     "50-笔记",
