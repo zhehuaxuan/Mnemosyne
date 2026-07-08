@@ -13,8 +13,8 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "README.md",
-                "mode": "preview",
+                "file": "00-收件箱/1-灵感/README.md",
+                "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
@@ -185,27 +185,29 @@
   },
   "active": "093f1342f461341a",
   "lastOpenFiles": [
+    "00-收件箱/3-待办/README.md",
+    "00-收件箱/1-灵感/README.md",
+    "00-收件箱/README.md",
+    "00-收件箱/4-想法",
+    "00-收件箱/3-待办",
+    "00-收件箱/2-问题",
+    "00-收件箱/1-灵感",
+    "00-收件箱/capture/4-想法",
+    "00-收件箱/capture/3-待办",
+    "00-收件箱/capture/2-问题",
+    "00-收件箱/capture/1-灵感",
+    "00-收件箱/capture/问题",
+    "00-收件箱/capture/灵感",
+    "README.md",
     "90-模板/README.md",
-    "git-quick-commit.bat",
-    "50-笔记/README.md.tmp.5216.9c0e66fedbc2",
-    "README.md.tmp.5216.f3cb347391a3",
     "10-项目/README.md",
     "50-Notes/README.md",
-    "90-模板",
     "50-笔记/README.md",
-    "50-笔记",
     "40-归档/README.md",
-    "40-归档",
     "30-资源/README.md",
-    "30-资源",
     "20-领域/README.md",
-    "20-领域",
-    "10-项目",
-    "00-收件箱/README.md",
-    "00-收件箱",
     "00-Inbox/README.md",
     "10-Projects/README.md",
-    "20-Areas/README.md",
-    "README.md"
+    "20-Areas/README.md"
   ]
 }

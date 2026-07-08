@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 chcp 65001 >nul
 
 echo ========================================
@@ -71,12 +72,24 @@ if errorlevel 1 (
     exit /b 1
 )
 
+set /a MAX_RETRIES=3
+set /a retry_count=0
+
 echo Pushing...
+:push_retry
 git push
 if errorlevel 1 (
-    echo Push failed!
-    pause
-    exit /b 1
+    set /a retry_count+=1
+    if !retry_count! lss %MAX_RETRIES% (
+        echo Push failed, retrying (!retry_count!/!MAX_RETRIES!)...
+        echo Pulling latest changes first...
+        git pull --rebase
+        goto push_retry
+    ) else (
+        echo Push failed after %MAX_RETRIES% retries!
+        pause
+        exit /b 1
+    )
 )
 
 echo.
