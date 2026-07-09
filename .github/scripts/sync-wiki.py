@@ -72,7 +72,8 @@ def scan_pages(repo_root: Path) -> list[dict]:
 
         fm, body = parse_frontmatter(content)
 
-        if fm.get('wiki') is not True:
+        wiki_val = fm.get('wiki')
+        if wiki_val is not True and str(wiki_val).lower() != 'true':
             continue
 
         title = fm.get('title') or md_file.stem
