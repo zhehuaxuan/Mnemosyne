@@ -1,3 +1,12 @@
+---
+title: Mnemosyne 知识库
+description: 基于 PARA + Zettelkasten 的个人知识管理系统
+date: 2026-07-08
+tags: [知识管理, PARA, Zettelkasten, Obsidian]
+type: 知识库概览
+status: active
+---
+
 # Mnemosyne - 个人知识库
 
 > 源于希腊记忆女神 Mnemosyne，构建你的第二大脑。
@@ -28,9 +37,9 @@ Mnemosyne/
 5. **可发现性优先**：良好的命名和链接比深层目录重要
 
 ```
-	看到/想到什么 → 丢进 00-Inbox（收件箱）  
-	↓ 每天/每周整理  
-	有用的内容 → 移到 20-Areas 或 50-Notes  
+	看到/想到什么 → 丢进 00-Inbox（收件箱）
+	↓ 每天/每周整理
+	有用的内容 → 移到 20-Areas 或 50-Notes
 	项目做完 → 移到 40-Archives
 ```
 

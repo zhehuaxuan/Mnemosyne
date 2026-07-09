@@ -1,3 +1,12 @@
+---
+title: 40-归档目录
+description: 不再活跃但可能未来有用的内容
+date: 2026-07-08
+tags: [PARA, 归档, 目录]
+type: 目录说明
+parent: /
+---
+
 # 40-归档 - Archives
 
 > 不再活跃但可能未来有用的内容。

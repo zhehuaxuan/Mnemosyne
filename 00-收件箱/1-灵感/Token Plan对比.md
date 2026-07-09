@@ -1,3 +1,21 @@
+---
+title: Token Plan 对比
+description: AI 编程模型 SOAT 排名和国产大模型 Code 能力排行
+date: 2026-07-09
+tags:
+  - AI
+  - LLM
+  - 评测
+  - 编程能力
+  - SWE-bench
+  - OpenCompass
+type: 评测数据
+related:
+  - "[[AI Aggent面试题]]"
+  - "[[如何让Obsidian+AI形成让AI懂的个人知识库]]"
+source: https://www.swebench.com/leaderboard
+---
+
 # Token Plan 对比
 
 ## 第一章：AI Coding SOAT 排名查看渠道
@@ -28,7 +46,7 @@
 - 上海人工智能实验室出品，中文友好，综合评测
 
 如下所示为司南的权威排行榜：
-![](../../_assets/Pasted%20image%2020260709193704.png)
+![](../../_assets/Pasted image 20260709193704.png)
 
 ## 第二章：国产大模型 Code 能力排行
 

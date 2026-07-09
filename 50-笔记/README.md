@@ -1,3 +1,12 @@
+---
+title: 50-笔记目录
+description: Zettelkasten 原子笔记，通过链接形成知识网络
+date: 2026-07-08
+tags: [PARA, Zettelkasten, 笔记, 目录]
+type: 目录说明
+parent: /
+---
+
 # 50-笔记 - Zettelkasten 原子笔记
 
 > 原子化的永久笔记，通过链接形成知识网络。

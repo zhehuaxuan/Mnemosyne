@@ -2,6 +2,11 @@
 setlocal enabledelayedexpansion
 chcp 65001 >nul
 
+REM 检查是否在新的窗口中运行，如果是则保持窗口打开
+if "%~0" == "%~nx0" goto main
+echo Warning: Run this script directly, not via another batch file
+:main
+
 echo ========================================
 echo        Git Quick Commit Script
 echo ========================================
@@ -34,8 +39,10 @@ if "%type_num%"=="9" set "COMMIT_TYPE=revert"
 
 if not defined COMMIT_TYPE (
     echo Invalid selection!
-    pause
-    exit /b 1
+    echo.
+    echo Press any key to exit...
+    pause >nul
+    exit
 )
 
 for /f %%a in ('powershell -command "(Get-Date).ToString('yyyy-MM-dd')"') do set "DATE=%%a"
@@ -45,8 +52,10 @@ set /p message="Enter commit message: "
 
 if not defined message (
     echo Commit message cannot be empty!
-    pause
-    exit /b 1
+    echo.
+    echo Press any key to exit...
+    pause >nul
+    exit
 )
 
 set "FULL_COMMIT=[%DATE%] %COMMIT_TYPE%: %message%"
@@ -57,7 +66,10 @@ echo.
 set /p confirm="Confirm? (Y/N): "
 if /i not "%confirm%"=="Y" (
     echo Cancelled.
-    exit /b 0
+    echo.
+    echo Press any key to exit...
+    pause >nul
+    exit
 )
 
 echo.
@@ -68,8 +80,10 @@ echo Committing...
 git commit -m "%FULL_COMMIT%"
 if errorlevel 1 (
     echo Commit failed!
-    pause
-    exit /b 1
+    echo.
+    echo Press any key to exit...
+    pause >nul
+    exit
 )
 
 set /a MAX_RETRIES=3
@@ -87,8 +101,10 @@ if errorlevel 1 (
         goto push_retry
     ) else (
         echo Push failed after %MAX_RETRIES% retries!
-        pause
-        exit /b 1
+        echo.
+        echo Press any key to exit...
+        pause >nul
+        exit
     )
 )
 
