@@ -14,6 +14,7 @@ related:
   - "[[AI Aggent面试题]]"
   - "[[如何让Obsidian+AI形成让AI懂的个人知识库]]"
 source: https://www.swebench.com/leaderboard
+wiki: "true"
 ---
 
 # Token Plan 对比
