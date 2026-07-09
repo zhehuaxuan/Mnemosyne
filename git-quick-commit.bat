@@ -2,11 +2,6 @@
 setlocal enabledelayedexpansion
 chcp 65001 >nul
 
-REM 检查是否在新的窗口中运行，如果是则保持窗口打开
-if "%~0" == "%~nx0" goto main
-echo Warning: Run this script directly, not via another batch file
-:main
-
 echo ========================================
 echo        Git Quick Commit Script
 echo ========================================
