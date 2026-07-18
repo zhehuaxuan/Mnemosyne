@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "30-资源/1-Token/当前OpenCode GO在Claude CLI的模型转换关系.md",
+                "file": "00-收件箱/1-灵感/Token Plan对比.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "当前OpenCode GO在Claude CLI的模型转换关系"
+              "title": "Token Plan对比"
             }
           }
         ]
@@ -185,8 +185,8 @@
   },
   "active": "d2496600db833f8c",
   "lastOpenFiles": [
-    "00-收件箱/1-灵感/Token Plan对比.md",
     "30-资源/1-Token/当前OpenCode GO在Claude CLI的模型转换关系.md",
+    "00-收件箱/1-灵感/Token Plan对比.md",
     "30-资源/1-Token",
     "20-领域/1-投资/具身智能.eddx.NoeFkD",
     "20-领域/1-投资/具身智能.eddx.iskORN",
