@@ -146,15 +146,14 @@ def convert_frontmatter(fm: dict, link_map: dict[str, str]) -> str:
             val = str(val).strip()
             if val.startswith(('http://', 'https://')):
                 val = f'[{val}]({val})'
-            rows.append(f'**{label}**: {val}')
+            rows.append(f'**{label}**:\n{val}')
 
         elif key == 'tags':
-            # tags: [AI, LLM] 或 tags: [AI, LLM]
             if isinstance(val, list):
                 tag_str = ' '.join(f'`{t}`' for t in val if t)
             else:
                 tag_str = f'`{val}`'
-            rows.append(f'**{label}**: {tag_str}')
+            rows.append(f'**{label}**:\n{tag_str}')
 
         elif key == 'related':
             if isinstance(val, list):
@@ -163,12 +162,12 @@ def convert_frontmatter(fm: dict, link_map: dict[str, str]) -> str:
                     if isinstance(item, str) and '[[' in item:
                         item = convert_wikilinks(item, link_map)
                     converted.append(item)
-                rows.append(f'**{label}**: {", ".join(converted)}')
+                rows.append(f'**{label}**:\n{", ".join(converted)}')
             elif val:
-                rows.append(f'**{label}**: {val}')
+                rows.append(f'**{label}**:\n{val}')
 
         else:
-            rows.append(f'**{label}**: {val}')
+            rows.append(f'**{label}**:\n{val}')
 
     if not rows:
         return ''
