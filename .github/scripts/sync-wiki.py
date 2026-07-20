@@ -116,6 +116,65 @@ def build_link_map(pages: list[dict]) -> dict[str, str]:
     return link_map
 
 
+def convert_frontmatter(fm: dict, link_map: dict[str, str]) -> str:
+    """将 frontmatter 元数据转为 markdown 信息块，保留在 wiki 页面顶部。"""
+    if not fm:
+        return ''
+
+    # 需要过滤/展示的字段映射
+    FIELD_LABELS = {
+        'description': '描述',
+        'date': '日期',
+        'tags': '标签',
+        'source': '来源',
+        'type': '类型',
+        'related': '关联',
+    }
+    SKIP_FIELDS = {'title', 'wiki', 'aliases'}
+
+    rows = []
+
+    for key, label in FIELD_LABELS.items():
+        if key not in fm:
+            continue
+        val = fm[key]
+        if val is None:
+            continue
+
+        if key == 'source':
+            # source 可能是纯 URL 或 markdown 链接
+            val = str(val).strip()
+            if val.startswith(('http://', 'https://')):
+                val = f'[{val}]({val})'
+            rows.append(f'**{label}**:\n{val}')
+
+        elif key == 'tags':
+            if isinstance(val, list):
+                tag_str = ' '.join(f'`{t}`' for t in val if t)
+            else:
+                tag_str = f'`{val}`'
+            rows.append(f'**{label}**:\n{tag_str}')
+
+        elif key == 'related':
+            if isinstance(val, list):
+                converted = []
+                for item in val:
+                    if isinstance(item, str) and '[[' in item:
+                        item = convert_wikilinks(item, link_map)
+                    converted.append(item)
+                rows.append(f'**{label}**:\n{", ".join(converted)}')
+            elif val:
+                rows.append(f'**{label}**:\n{val}')
+
+        else:
+            rows.append(f'**{label}**:\n{val}')
+
+    if not rows:
+        return ''
+
+    return '---\n' + '\n'.join(rows) + '\n\n---\n'
+
+
 def convert_wikilinks(body: str, link_map: dict[str, str]) -> str:
     """将 [[wikilinks]] 转为 [text](slug)。"""
 
@@ -310,16 +369,22 @@ def main() -> int:
     for p in pages:
         body = p['body']
 
+        # 转换 frontmatter 元数据为 wiki 信息块
+        fm_block = convert_frontmatter(p['fm'], link_map)
+
         # 转换 wikilinks
         body = convert_wikilinks(body, link_map)
 
         # 处理图片
         body = handle_images(body, p['source_file'].parent, repo_root, image_dir)
 
+        # 组装：信息块 + 正文
+        full_content = fm_block + body if fm_block else body
+
         # 写入 wiki 页面
         page_path = wiki_dir / f"{p['slug']}.md"
         with open(page_path, 'w', encoding='utf-8') as f:
-            f.write(body)
+            f.write(full_content)
 
         print(f"  ✓ {page_path.name}")
 
