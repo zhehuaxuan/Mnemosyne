@@ -11,7 +11,7 @@ tags:
   - OpenCompass
 type: 评测数据
 related:
-  - "[[AI Aggent面试题]]"
+  - "[[../../10-项目/1-AI Agent/AI Agent面试题]]"
   - "[[如何让Obsidian+AI形成让AI懂的个人知识库]]"
 source: https://www.swebench.com/leaderboard
 wiki: "true"

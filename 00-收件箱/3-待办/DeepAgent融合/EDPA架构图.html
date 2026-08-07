@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>agent-solution-common 架构图与流程图</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  body { font-family: "Microsoft YaHei", sans-serif; background: #f5f5f5; margin: 0; padding: 20px; }
+  h1 { text-align: center; color: #333; }
+  h2 { color: #444; margin-top: 40px; border-left: 4px solid #1890ff; padding-left: 12px; }
+  .mermaid { background: #fff; border-radius: 8px; padding: 20px; margin: 16px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+  .desc { color: #666; margin: 8px 0 24px 0; line-height: 1.8; }
+</style>
+</head>
+<body>
+<h1>agent-solution-common 架构图与流程图</h1>
+
+<h2>一、整体功能架构图</h2>
+<p class="desc">展示仓库两大顶层域（common / finance）及其核心模块的分层关系与职责。</p>
+<div class="mermaid">
+graph TB
+  subgraph REPO["agent-solution-common"]
+    direction TB
+
+    subgraph FINANCE["finance — 金融行业垂直域"]
+      METH["methodology<br/>方法论与流程工具"]
+      SKILLS_FIN["skills<br/>精品 Skill 能力"]
+      MCP_FIN["mcp<br/>MCP 外部连接"]
+    end
+
+    subgraph COMMON["common — 通用基础设施"]
+      direction TB
+
+      subgraph EDGE["🌐 边缘接入层"]
+        CLIENT["agent-client<br/>AgentClient SDK (JVM)<br/>A2A JSON-RPC 2.0 + SSE"]
+        GW["agent-gateway<br/>Agent Gateway<br/>A2A 入口治理 + 路由转发"]
+      end
+
+      subgraph REGISTRY["📋 注册发现层"]
+        RDC["registry-discovery-center<br/>Agent 注册发现中心<br/>逻辑Card发现 + 实例路由"]
+      end
+
+      subgraph BUS["🚌 消息总线层"]
+        BUS_SPI["agent-bus-spi<br/>总线 SPI 定义"]
+        BUS_SDK["agent-bus-sdk<br/>SDK 实现"]
+        BUS_RELAY["agent-bus-relay<br/>中继服务"]
+        BUS_TK["agent-bus-testkit<br/>测试工具包"]
+      end
+
+      subgraph RUNTIME["⚙️ 运行时扩展层"]
+        AC_EXT["adapters-agentcore-ext<br/>AgentCore 扩展适配器<br/>远端A2A工具注入 + 中断委托"]
+        VERS["adapters-versatile<br/>Versatile 适配器<br/>HTTP/SSE 工作流适配"]
+        AS_EXT["adapters-agentscope<br/>AgentScope 适配器"]
+      end
+
+      subgraph CORE_EXT["🧠 SDK 扩展层"]
+        REACT["react-rails<br/>ReAct 认知轨道<br/>验证/重规划/降级"]
+      end
+
+      subgraph AGENTS["🤖 Agent 实现层"]
+        PEV["pev<br/>Plan-Execute-Verify<br/>-Diagnose-Dispatch"]
+        EDP_J["edp-agent-java<br/>EDP Agent (Java)"]
+        EDP_P["edp-agent-python<br/>EDP Agent (Python)"]
+        EDPA["edpa-alpha<br/>EDP Agent Alpha"]
+        VERS_A["versatile-agent-java<br/>Versatile Agent"]
+      end
+
+      subgraph EVOLVE["🔄 自进化层"]
+        EVO["evoagent<br/>Skill/managed-doc 自进化"]
+        EVO_AD["evoagent-adapter<br/>日志/Skill sidecar"]
+      end
+
+      subgraph SPEC_EXT["📄 规范扩展层"]
+        SPEC["agent-service-spec-ext<br/>服务规范扩展"]
+      end
+
+      subgraph EXAMPLES["📦 示例工程"]
+        E1["agentcore-ext-remote-a2a-tool-demo"]
+        E2["agentcore-ext-deepagent-remote-a2a-demo"]
+        E3["versatile-a2a-adapter-demo"]
+        E4["agent-bus-consumer-demo"]
+        E5["agent-client-demo"]
+        E6["agent-gateway-demo"]
+        E7["multi-deep-research-demo"]
+        E8["multi-react-travel-demo"]
+        E9["edp-agent-integration-demo"]
+        E10["skillhub-runtime-demo"]
+        E11["其他示例..."]
+      end
+    end
+  end
+
+  CLIENT -->|A2A 请求| GW
+  GW -->|路由查询| RDC
+  GW -->|请求转发| RUNTIME
+  RDC -->|Card 发现| RUNTIME
+  BUS_SPI --> BUS_SDK
+  BUS_SDK --> BUS_RELAY
+  RUNTIME -->|使用| CORE_EXT
+  RUNTIME -->|驱动| AGENTS
+  AGENTS -->|使用| CORE_EXT
+  EVOLVE -->|能力更新| AGENTS
+  SPEC_EXT -->|规范约束| RUNTIME
+
+  style REPO fill:#fafafa,stroke:#999,stroke-width:2px
+  style COMMON fill:#e6f7ff,stroke:#1890ff,stroke-width:1px
+  style FINANCE fill:#fff7e6,stroke:#fa8c16,stroke-width:1px
+  style EDGE fill:#d9f7be,stroke:#52c41a,stroke-width:1px
+  style REGISTRY fill:#e6fffb,stroke:#13c2c2,stroke-width:1px
+  style BUS fill:#f9f0ff,stroke:#722ed1,stroke-width:1px
+  style RUNTIME fill:#fff1f0,stroke:#f5222d,stroke-width:1px
+  style CORE_EXT fill:#fcffe6,stroke:#a0d911,stroke-width:1px
+  style AGENTS fill:#e6fffb,stroke:#1890ff,stroke-width:1px
+  style EVOLVE fill:#fff0f6,stroke:#eb2f96,stroke-width:1px
+  style SPEC_EXT fill:#f0f0f0,stroke:#8c8c8c,stroke-width:1px
+  style EXAMPLES fill:#f5f5f5,stroke:#bfbfbf,stroke-width:1px
+</div>
+
+<h2>二、分层架构图</h2>
+<p class="desc">展示系统从上到下的分层依赖关系，以及外部依赖（agent-runtime-java / agent-core-java）。</p>
+<div class="mermaid">
+graph TB
+  subgraph EXTERNAL["外部依赖"]
+    RT["agent-runtime-java<br/>HTTP入口 / A2A协议 / 会话编排"]
+    CORE["agent-core-java<br/>Agent 执行核心"]
+  end
+
+  subgraph L1["L1 — 边缘接入"]
+    GW_L["agent-gateway<br/>A2A 入口治理 + 路由转发"]
+    CL_L["agent-client-sdk-for-jvm<br/>A2A JSON-RPC 2.0 Client"]
+  end
+
+  subgraph L2["L2 — 注册发现"]
+    RDC_L["registry-discovery-center<br/>逻辑Card注册发现 + 实例路由 + 健康探活"]
+    DB[("PostgreSQL<br/>多租户 RLS 隔离")]
+    RDC_L --- DB
+  end
+
+  subgraph L3["L3 — 消息总线"]
+    BUS_L["agent-bus<br/>SPI + SDK + Relay<br/>跨平面消息转发"]
+  end
+
+  subgraph L4["L4 — 运行时适配"]
+    AC_L["adapters-agentcore-ext<br/>远端A2A工具注入 + 中断委托"]
+    VS_L["adapters-versatile<br/>HTTP/SSE 工作流适配"]
+    AS_L["adapters-agentscope<br/>AgentScope 适配"]
+  end
+
+  subgraph L5["L5 — SDK 扩展"]
+    RR_L["react-rails<br/>ReAct 认知轨道"]
+  end
+
+  subgraph L6["L6 — Agent 实现"]
+    PEV_L["PEV Agent"]
+    EDP_L["EDP Agent"]
+    VRS_L["Versatile Agent"]
+  end
+
+  subgraph L7["L7 — 自进化"]
+    EVO_L["evoagent / evoagent-adapter<br/>Skill/managed-doc 自进化"]
+  end
+
+  CL_L -->|A2A 请求| GW_L
+  GW_L -->|路由查询| RDC_L
+  GW_L -->|请求转发| L4
+  L4 -->|依赖| RT
+  L4 -->|依赖| CORE
+  L6 -->|依赖| CORE
+  L6 -->|使用| L5
+  L4 -->|使用| L5
+  BUS_L -->|消息| GW_L
+  BUS_L -->|消息| L4
+  L7 -.->|能力更新| L6
+
+  style EXTERNAL fill:#fff1f0,stroke:#f5222d,stroke-width:2px
+  style L1 fill:#d9f7be,stroke:#52c41a,stroke-width:1px
+  style L2 fill:#e6fffb,stroke:#13c2c2,stroke-width:1px
+  style L3 fill:#f9f0ff,stroke:#722ed1,stroke-width:1px
+  style L4 fill:#fff1f0,stroke:#f5222d,stroke-width:1px
+  style L5 fill:#fcffe6,stroke:#a0d911,stroke-width:1px
+  style L6 fill:#e6f7ff,stroke:#1890ff,stroke-width:1px
+  style L7 fill:#fff0f6,stroke:#eb2f96,stroke-width:1px
+</div>
+
+<h2>三、核心交互流程图 — 远端 A2A 工具注入与委托</h2>
+<p class="desc">展示 AgentCore 扩展适配器如何复用 runtime 的远端 A2A Card 注册发现结果，注入远端工具，并通过中断机制委托远程调用。</p>
+<div class="mermaid">
+sequenceDiagram
+  participant Client as 调用方<br/>(agent-client)
+  participant GW as Agent Gateway
+  participant RDC as Registry Discovery Center
+  participant RT as Agent Runtime<br/>(agent-runtime-java)
+  participant AC as AgentCore Adapter<br/>(adapters-agentcore-ext)
+  participant Core as AgentCore<br/>(agent-core-java)
+  participant Remote as 远端 Agent B
+
+  Note over Client,Remote: 阶段一：注册发现
+  Remote->>RT: 注册 Agent Card (A2A)
+  RT->>RDC: 推送/对账部署信息
+  RDC->>RDC: 持久化 + 抓取 Agent Card
+  RDC-->>RT: 注册确认
+
+  Note over Client,Remote: 阶段二：请求处理
+  Client->>GW: A2A JSON-RPC 请求
+  GW->>RDC: 路由查询 (discover / resolve)
+  RDC-->>GW: 返回 routeHandle + endpointUrl
+  GW->>RT: 转发请求
+
+  Note over Client,Remote: 阶段三：工具注入 + 执行
+  RT->>AC: AgentHandler.handle()
+  AC->>RDC: 查询远端 Agent Card
+  RDC-->>AC: 返回远端 Agent 能力列表
+  AC->>Core: 注入远端 Agent 为工具<br/>(a2a_delegate tool)
+  Core->>Core: ReAct 推理<br/>(react-rails 验证/重规划)
+  Core-->>AC: 中断: a2a_delegate<br/>(需要委托远端调用)
+
+  Note over Client,Remote: 阶段四：中断处理 + 远端委托
+  AC->>RT: 中断委托请求
+  RT->>Remote: A2A 远端调用
+  Remote-->>RT: 返回远端结果
+  RT-->>AC: 恢复: 注入远端结果
+  AC->>Core: 恢复执行 (resume)
+  Core->>Core: 继续推理 + 最终结果
+  Core-->>AC: 最终响应
+  AC-->>RT: 返回结果
+  RT-->>GW: 响应
+  GW-->>Client: A2A 响应
+</div>
+
+<h2>四、注册发现流程图</h2>
+<p class="desc">展示 registry-discovery-center 的双平面架构：逻辑 Card 发现（Feat-015）与运行时实例路由（FEAT-016）。</p>
+<div class="mermaid">
+flowchart TB
+  subgraph DISCOVERY["逻辑 Agent Card 发现平面 (Feat-015)"]
+    direction TB
+    D1["DeploymentDiscoveryProvider<br/>可插拔部署发现 SPI"]
+    D2["ReconciliationScheduler<br/>对账调度"]
+    D3["AgentCardFetcher<br/>抓取 /.well-known/agent-card.json"]
+    D4["agent_card_registration<br/>逻辑 Card 目录"]
+
+    D1 -->|watchInstances| D2
+    D2 -->|增量/全量对账| D3
+    D3 -->|Card digest 去重| D4
+  end
+
+  subgraph ROUTING["运行时实例路由平面 (FEAT-016)"]
+    direction TB
+    R1["POST /register<br/>实例注册 (push / deployment)"]
+    R2["agent_registry_mvp<br/>实例表 (4-field PK)"]
+    R3["GET /instances/{tenantId}/{agentId}"]
+    R4["GET /instances/by-service/{tenantId}/{serviceId}"]
+    R5["GET /instances/by-capability/{tenantId}/{capability}"]
+    R6["POST /route-handle/resolve<br/>解析 routeHandle → endpointUrl"]
+    R7["Health Probe<br/>健康探活"]
+
+    R1 --> R2
+    R3 --> R2
+    R4 --> R2
+    R5 --> R2
+    R6 -->|v2: 6-field 解码| R2
+    R7 -->|updateStatus| R2
+  end
+
+  subgraph CALLER["调用方"]
+    C1["POST /api/registry/discover<br/>逻辑 Card 发现"]
+    C2["实例路由查询"]
+    C3["routeHandle 解析"]
+  end
+
+  C1 -->|查询| D4
+  C2 -->|agentId/serviceId/capability| R3
+  C2 --> R4
+  C2 --> R5
+  C3 --> R6
+
+  style DISCOVERY fill:#e6fffb,stroke:#13c2c2,stroke-width:1px
+  style ROUTING fill:#fff1f0,stroke:#f5222d,stroke-width:1px
+  style CALLER fill:#d9f7be,stroke:#52c41a,stroke-width:1px
+</div>
+
+<h2>五、PEV Agent 内部流程图</h2>
+<p class="desc">展示 PEV (Plan-Execute-Verify-Diagnose-Dispatch) Agent 的认知循环，基于 react-rails 轨道。</p>
+<div class="mermaid">
+flowchart TB
+  START([用户请求]) --> PLAN
+
+  subgraph PEV["PEV Agent — Plan-Execute-Verify-Diagnose-Dispatch"]
+    PLAN["📋 Plan<br/>任务分解与规划"]
+    EXEC["🔧 Execute<br/>逐步执行子任务"]
+    VERIFY["✅ Verify<br/>验证执行结果"]
+    DIAG["🔍 Diagnose<br/>诊断失败原因"]
+    DISPATCH["📤 Dispatch<br/>分发最终结果"]
+
+    REPLAN["🔄 Replan<br/>基于诊断重规划"]
+    DEGRADE["⬇️ Degrade<br/>降级处理"]
+
+    PLAN --> EXEC
+    EXEC --> VERIFY
+    VERIFY -->|通过| DISPATCH
+    VERIFY -->|失败| DIAG
+    DIAG -->|可重规划| REPLAN
+    DIAG -->|不可恢复| DEGRADE
+    REPLAN --> PLAN
+  end
+
+  DISPATCH --> END([最终响应])
+  DEGRADE --> END
+
+  subgraph RAILS["react-rails 认知轨道"]
+    R1["验证轨道<br/>Verify Rail"]
+    R2["重规划轨道<br/>Replan Rail"]
+    R3["降级轨道<br/>Degrade Rail"]
+  end
+
+  R1 -.->|显式验证| VERIFY
+  R2 -.->|显式重规划| REPLAN
+  R3 -.->|显式降级| DEGRADE
+
+  style PEV fill:#e6f7ff,stroke:#1890ff,stroke-width:1px
+  style RAILS fill:#fcffe6,stroke:#a0d911,stroke-width:1px
+</div>
+
+<h2>六、Agent Gateway 请求转发流程</h2>
+<p class="desc">展示 Agent Gateway 作为 A2A 入口治理节点的请求处理流程。</p>
+<div class="mermaid">
+flowchart LR
+  subgraph INGRESS["A2A 入口"]
+    A1["A2A JSON-RPC 请求"]
+  end
+
+  subgraph GW["Agent Gateway"]
+    A2["A2A Facade<br/>@RestController"]
+    A3["治理校验<br/>身份/权限/限流"]
+    A4["路由决策<br/>RdcRouteClient"]
+    A5["请求转发<br/>AgentRuntimeClient"]
+  end
+
+  subgraph DOWNSTREAM["下游服务"]
+    A6["RDC<br/>注册发现中心"]
+    A7["Agent Runtime<br/>运行时"]
+  end
+
+  subgraph BUS_PATH["Bus 路径"]
+    A8["agent-bus-spi<br/>ForwardingOutboxPort"]
+    A9["agent-bus-relay<br/>消息中继"]
+  end
+
+  A1 --> A2
+  A2 --> A3
+  A3 -->|路由查询| A4
+  A4 -->|discover/resolve| A6
+  A3 -->|直接转发| A5
+  A5 -->|HTTP/SSE| A7
+  A3 -->|Bus 路径| A8
+  A8 --> A9
+  A9 --> A7
+
+  style INGRESS fill:#d9f7be,stroke:#52c41a,stroke-width:1px
+  style GW fill:#fff1f0,stroke:#f5222d,stroke-width:1px
+  style DOWNSTREAM fill:#e6fffb,stroke:#13c2c2,stroke-width:1px
+  style BUS_PATH fill:#f9f0ff,stroke:#722ed1,stroke-width:1px
+</div>
+
+<h2>七、Agent 自进化流程</h2>
+<p class="desc">展示 evoagent / evoagent-adapter 的 Skill 自进化与 sidecar 适配流程。</p>
+<div class="mermaid">
+flowchart TB
+  subgraph EVO["evoagent — 自进化服务"]
+    B1["Skill 仓库<br/>skills/"]
+    B2["场景定义<br/>scenarios/"]
+    B3["进化引擎<br/>src/"]
+    B4["managed-doc<br/>文档管理"]
+  end
+
+  subgraph ADAPTER["evoagent-adapter — Sidecar 适配"]
+    B5["日志采集<br/>Log Sidecar"]
+    B6["Skill 适配<br/>Skill Sidecar"]
+    B7["managed-doc 适配<br/>Doc Sidecar"]
+  end
+
+  subgraph AGENT_RUN["Agent 运行时"]
+    B8["Agent 执行<br/>(PEV/EDP/Versatile)"]
+    B9["Skill 调用"]
+  end
+
+  B8 -->|执行日志| B5
+  B5 -->|日志反馈| B3
+  B8 -->|Skill 调用| B9
+  B9 -->|调用结果| B6
+  B6 -->|Skill 效果反馈| B3
+  B3 -->|Skill 优化/生成| B1
+  B3 -->|文档更新| B4
+  B4 -->|文档同步| B7
+  B7 -->|新文档| B8
+  B2 -->|场景约束| B3
+  B1 -->|Skill 更新| B9
+
+  style EVO fill:#fff0f6,stroke:#eb2f96,stroke-width:1px
+  style ADAPTER fill:#e6f7ff,stroke:#1890ff,stroke-width:1px
+  style AGENT_RUN fill:#e6fffb,stroke:#13c2c2,stroke-width:1px
+</div>
+
+</body>
+</html>

@@ -11,7 +11,7 @@ tags:
 type: 教程
 related:
   - "[[Token Plan对比]]"
-  - "[[AI Aggent面试题]]"
+  - "[[../../10-项目/1-AI Agent/AI Agent面试题]]"
 ---
 
 ## 目标
